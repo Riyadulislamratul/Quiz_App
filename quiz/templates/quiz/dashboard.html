@@ -1,0 +1,66 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Dashboard - Quiz Portal{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2.25rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;">
+        Welcome, {{ participant.name }}
+    </h1>
+    <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
+        {{ participant.institution }} &bull; Class {{ participant.classroom }} &bull; {{ participant.gender }}, {{ participant.age }} years old
+    </p>
+</div>
+
+<!-- Stats Dashboard -->
+<div class="stats-bar">
+    <div class="stat-box">
+        <div class="stat-value">{{ total_attempts }}</div>
+        <div class="stat-label">Quizzes Played</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">{{ avg_score }}</div>
+        <div class="stat-label">Average Score</div>
+    </div>
+</div>
+
+<!-- Available Quizzes Section -->
+<h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem;">Quizzes</h2>
+<div class="quiz-list">
+    {% for item in quiz_data %}
+        <div class="quiz-card">
+            <div class="quiz-title">{{ item.quiz.title }}</div>
+            <div class="quiz-desc">{{ item.quiz.description }}</div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Total Questions: {{ item.total_questions }}</div>
+                {% if item.has_taken %}
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+                        Best Score: <strong style="color: var(--success);">{{ item.best_score }}/{{ item.total_questions }}</strong>
+                    </div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        Leaderboard Position: <strong style="color: var(--accent);">#{{ item.position }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="quiz-meta">
+                {% if item.has_taken %}
+                    <span class="quiz-badge badge-taken">Taken</span>
+                    <a href="{% url 'quiz:take_quiz' item.quiz.id %}" class="nav-btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Retake</a>
+                {% else %}
+                    <span class="quiz-badge badge-new">New</span>
+                    <a href="{% url 'quiz:take_quiz' item.quiz.id %}" class="nav-btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Start Quiz</a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1.5rem;">No quizzes have been created yet. Please check back later!</p>
+            {% if user.is_staff %}
+                <a href="/admin/quiz/quiz/add/" class="nav-btn" target="_blank">Add a Quiz in Admin Panel</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

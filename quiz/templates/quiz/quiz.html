@@ -1,0 +1,135 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Taking Quiz: {{ quiz.title }}{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 800px; margin: 0 auto;">
+    <div class="quiz-header">
+        <h1 style="font-size: 1.75rem; font-weight: 700;">{{ quiz.title }}</h1>
+        <span id="questionCounter" style="color: var(--text-secondary); font-weight: 600;">Question 1 of {{ questions|length }}</span>
+    </div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+    </div>
+
+    <form method="POST" id="quizForm">
+        {% csrf_token %}
+        
+        {% for q in questions %}
+            <div class="quiz-question-card {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                <div class="question-text">{{ forloop.counter }}. {{ q.question }}</div>
+                
+                <div class="options-list">
+                    {% for opt in q.options %}
+                        <div class="option-item">
+                            <input type="radio" name="question_{{ q.id }}" id="opt_{{ opt.id }}" value="{{ opt.id }}" class="option-input" required>
+                            <label for="opt_{{ opt.id }}" class="option-label">
+                                {{ opt.option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="quiz-nav-btns">
+            <button type="button" class="btn-secondary" id="prevBtn" style="display: none;">Previous</button>
+            <button type="button" class="btn-primary" id="nextBtn" style="width: auto; padding: 0.8rem 2rem;">Next</button>
+            <button type="submit" class="btn-primary" id="submitBtn" style="width: auto; padding: 0.8rem 2rem; display: none;">Submit Quiz</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const cards = document.querySelectorAll('.quiz-question-card');
+        const totalQuestions = cards.length;
+        let currentIndex = 0;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const counter = document.getElementById('questionCounter');
+        const progressBar = document.getElementById('progressBar');
+
+        function updateUI() {
+            // Show/Hide cards
+            cards.forEach((card, idx) => {
+                if (idx === currentIndex) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+
+            // Update counter and progress bar
+            counter.textContent = `Question ${currentIndex + 1} of ${totalQuestions}`;
+            const progressPct = ((currentIndex + 1) / totalQuestions) * 100;
+            progressBar.style.width = `${progressPct}%`;
+
+            // Button visibility
+            if (currentIndex === 0) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+            }
+
+            if (currentIndex === totalQuestions - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Initialize progress
+        updateUI();
+
+        nextBtn.addEventListener('click', function() {
+            // Check if user answered the current question
+            const currentCard = cards[currentIndex];
+            const radios = currentCard.querySelectorAll('input[type="radio"]');
+            let answered = false;
+            radios.forEach(radio => {
+                if (radio.checked) answered = true;
+            });
+
+            if (!answered) {
+                alert('Please select an option before moving to the next question.');
+                return;
+            }
+
+            if (currentIndex < totalQuestions - 1) {
+                currentIndex++;
+                updateUI();
+            }
+        });
+
+        prevBtn.addEventListener('click', function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+        // Form submission check
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            const currentCard = cards[currentIndex];
+            const radios = currentCard.querySelectorAll('input[type="radio"]');
+            let answered = false;
+            radios.forEach(radio => {
+                if (radio.checked) answered = true;
+            });
+
+            if (!answered) {
+                e.preventDefault();
+                alert('Please select an option before submitting the quiz.');
+            }
+        });
+    });
+</script>
+{% endblock %}

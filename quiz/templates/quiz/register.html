@@ -1,0 +1,55 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Register - Quiz Portal{% endblock %}
+
+{% block content %}
+<div class="glass-card form-container">
+    <h1 class="form-title">Create Account</h1>
+    <p class="form-subtitle">Register to participate in quizzes, track scores, and compete on the leaderboard</p>
+    
+    <form method="POST" action="{% url 'quiz:register' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.confirm_password.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div style="color: var(--error); font-weight: 500; margin-bottom: 1.5rem;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">Register & Log In</button>
+    </form>
+    
+    <div style="margin-top: 1.5rem; text-align: center; font-size: 0.95rem; color: var(--text-secondary);">
+        Already have an account? <a href="{% url 'quiz:login' %}" style="color: var(--accent); text-decoration: none; font-weight: 500;">Login here</a>
+    </div>
+</div>
+{% endblock %}

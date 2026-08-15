@@ -1,0 +1,88 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Profile Settings - Quiz Portal{% endblock %}
+
+{% block content %}
+<div class="glass-card form-container">
+    <h1 class="form-title">Profile Settings</h1>
+    <p class="form-subtitle">Manage your participant profile information</p>
+    
+    <form method="POST" action="{% url 'quiz:profile' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Class</label>
+            {{ form.classroom }}
+            {% if form.classroom.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.classroom.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Age</label>
+            {{ form.age }}
+            {% if form.age.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.age.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Gender</label>
+            {{ form.gender }}
+            {% if form.gender.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.gender.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Institution</label>
+            {{ form.institution }}
+            {% if form.institution.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.institution.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Change Password (optional)</label>
+            {{ form.new_password }}
+            {% if form.new_password.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.new_password.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            {{ form.confirm_password }}
+            {% if form.confirm_password.errors %}
+                <div style="color: var(--error); font-size: 0.85rem; margin-top: 0.25rem;">{{ form.confirm_password.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div style="color: var(--error); font-weight: 500; margin-bottom: 1.5rem;">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+        
+        <button type="submit" class="btn-primary" style="margin-top: 1rem;">Save Profile Settings</button>
+    </form>
+</div>
+{% endblock %}

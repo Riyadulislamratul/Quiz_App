@@ -1,0 +1,69 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Leaderboard - Quiz Portal{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Leaderboard standings
+    </h1>
+    
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <span style="color: var(--text-secondary); font-weight: 500;">Filter by Quiz:</span>
+        <a href="{% url 'quiz:leaderboard' %}" class="nav-link {% if not selected_quiz %}active{% endif %}" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">All Quizzes</a>
+        {% for quiz in quizzes %}
+            <a href="{% url 'quiz:quiz_leaderboard' quiz.id %}" class="nav-link {% if selected_quiz == quiz %}active{% endif %}" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">{{ quiz.title }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="glass-card">
+    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+        {% if selected_quiz %}{{ selected_quiz.title }} Standings{% else %}Recent Top Scores{% endif %}
+    </h2>
+    
+    <table class="leaderboard-table">
+        <thead>
+            <tr>
+                <th style="width: 80px;">Rank</th>
+                <th>Participant</th>
+                <th>Institution</th>
+                <th>Class</th>
+                {% if not selected_quiz %}
+                    <th>Quiz Title</th>
+                {% endif %}
+                <th style="text-align: right;">Score</th>
+                <th>Date Taken</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in attempts %}
+                <tr {% if entry.participant.user == request.user %}style="background-color: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--accent);"{% endif %}>
+                    <td>
+                        <span class="rank-badge {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
+                            {{ forloop.counter }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-primary);">{{ entry.participant.name }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">@{{ entry.participant.user.username }}</div>
+                    </td>
+                    <td>{{ entry.participant.institution }}</td>
+                    <td>{{ entry.participant.classroom }}</td>
+                    {% if not selected_quiz %}
+                        <td style="font-weight: 500;">{{ entry.quiz.title }}</td>
+                    {% endif %}
+                    <td style="text-align: right; font-weight: 700; color: var(--success);">{{ entry.score }} / {{ entry.total_questions }}</td>
+                    <td style="font-size: 0.9rem; color: var(--text-secondary);">{{ entry.completed_at|date:"M d, Y h:i A" }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{% if selected_quiz %}6{% else %}7{% endif %}" style="text-align: center; color: var(--text-secondary); padding: 3rem;">
+                        No attempts recorded yet. Be the first to try!
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

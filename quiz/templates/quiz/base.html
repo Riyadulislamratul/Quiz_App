@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quiz Portal{% endblock %}</title>
+    <meta name="description" content="An interactive, premium Quiz Portal for testing and ranking your skills.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{% static 'quiz/css/styles.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-theme="light">
+    <header>
+        <a href="{% url 'quiz:dashboard' %}" class="logo">QuizPortal</a>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <a href="{% url 'quiz:dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'quiz:leaderboard' %}" class="nav-link">Leaderboard</a>
+                <a href="{% url 'quiz:profile' %}" class="nav-link">Profile</a>
+                {% if user.is_staff %}
+                    <a href="/admin/" class="nav-link" target="_blank">Admin Panel</a>
+                {% endif %}
+                <span class="nav-link" style="color: var(--text-primary); font-weight:600;">Hi, {{ user.username }}</span>
+                <a href="{% url 'quiz:logout' %}" class="nav-link" style="color: var(--error);">Logout</a>
+            {% else %}
+                <a href="{% url 'quiz:login' %}" class="nav-link">Login</a>
+                <a href="{% url 'quiz:register' %}" class="nav-btn">Register</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert-message alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2026 QuizPortal. Designed for visual excellence and interactive performance.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
